@@ -56,7 +56,7 @@ function gotFaces(error, result) {
   faceapi.detect(gotFaces);
 }
 
-function drawBoxs(detections){
+function drawBoxs(detections) {
   if (detections.length > 0) {
     for (let f = 0; f < detections.length; f++) {
       let {_x, _y, _width, _height} = detections[f].alignedRect._box;
@@ -68,7 +68,7 @@ function drawBoxs(detections){
   }
 }
 
-function drawLandmarks(detections){
+function drawLandmarks(detections) {
   if (detections.length > 0) {
     for (let f = 0; f < detections.length; f++) {
       let points = detections[f].landmarks.positions;
@@ -81,30 +81,30 @@ function drawLandmarks(detections){
   }
 }
 
-function drawExpressions(detections, x, y, textYSpace){
-  if(detections.length > 0){
+function drawExpressions(detections, x, y, textYSpace) {
+  if (detections.length > 0) {
     let {neutral, happy, angry, sad, disgusted, surprised, fearful} = detections[0].expressions;
     textFont('Helvetica Neue');
     textSize(23);
     noStroke();
     fill(2, 245, 31);
-    textYSpace=23;
+    textYSpace = 23;
 
-    text("neutral:           " + nf(neutral*100, 2, 2)+"%", x, y);
-    text("happy:            " + nf(happy*100, 2, 2)+"%", x, y+textYSpace);
-    text("angry:             " + nf(angry*100, 2, 2)+"%", x, y+textYSpace*2);
-    text("sad:                "+ nf(sad*100, 2, 2)+"%", x, y+textYSpace*3);
-    text("disgusted:      " + nf(disgusted*100, 2, 2)+"%", x, y+textYSpace*4);
-    text("surprised:       " + nf(surprised*100, 2, 2)+"%", x, y+textYSpace*5);
-    text("fearful:            " + nf(fearful*100, 2, 2)+"%", x, y+textYSpace*6);
+    text("neutral:           " + nf(neutral * 100, 2, 2) + "%", x, y);
+    text("happy:            " + nf(happy * 100, 2, 2) + "%", x, y + textYSpace);
+    text("angry:             " + nf(angry * 100, 2, 2) + "%", x, y + textYSpace * 2);
+    text("sad:                " + nf(sad * 100, 2, 2) + "%", x, y + textYSpace * 3);
+    text("disgusted:      " + nf(disgusted * 100, 2, 2) + "%", x, y + textYSpace * 4);
+    text("surprised:       " + nf(surprised * 100, 2, 2) + "%", x, y + textYSpace * 5);
+    text("fearful:            " + nf(fearful * 100, 2, 2) + "%", x, y + textYSpace * 6);
   } else {
     text("neutral: ", x, y);
     text("happy: ", x, y + textYSpace);
-    text("angry: ", x, y + textYSpace*2);
-    text("sad: ", x, y + textYSpace*3);
-    text("disgusted: ", x, y + textYSpace*4);
-    text("surprised: ", x, y + textYSpace*5);
-    text("fearful: ", x, y + textYSpace*6);
+    text("angry: ", x, y + textYSpace * 2);
+    text("sad: ", x, y + textYSpace * 3);
+    text("disgusted: ", x, y + textYSpace * 4);
+    text("surprised: ", x, y + textYSpace * 5);
+    text("fearful: ", x, y + textYSpace * 6);
   }
 }
 
@@ -112,12 +112,15 @@ function mousePressed() {
   if (!fullscreen()) {
     fullscreen(true); // Enter full screen mode
     resizeCanvas(displayWidth, displayHeight); // Resize canvas to the full display dimensions
+    video.size(displayWidth, displayHeight); // Resize video to full screen
   } else {
     fullscreen(false); // Exit full screen mode if clicked again
     resizeCanvas(windowWidth, windowHeight); // Resize canvas to window size when exiting full screen
+    video.size(windowWidth, windowHeight); // Resize video back to window size
   }
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+  video.size(windowWidth, windowHeight); // Adjust video to window size on resize
 }
