@@ -9,5 +9,18 @@ body {
     src: url(Typeface/ElizaMono.ttf);
 } 
 
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Prevent scrolling and potential border effects */
+}
+
+#canvas, #video {
+  border: none;
+  outline: none;
+  margin: 0;
+  padding: 0;
+  display: block; /* Remove extra spacing */
+}
 
 

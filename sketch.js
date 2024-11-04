@@ -7,7 +7,7 @@ let canvas;
 function setup() {
   canvas = createCanvas(windowWidth, windowHeight);
   canvas.id("canvas");
-  canvas.style("outline", "none"); // Remove the white outline around the canvas
+  canvas.style("outline", "none"); // Remove outline around the canvas
 
   video = createCapture(VIDEO);
   video.id("video");
@@ -37,6 +37,7 @@ function gotFaces(error, result) {
   detections = result;
 
   clear();
+  noStroke(); // Ensure no stroke around canvas elements
 
   // Mirror the video and face detection
   push();
@@ -51,7 +52,7 @@ function gotFaces(error, result) {
   pop();
 
   // Draw non-mirrored expressions text
-  drawExpressions(detections, 100, 250, 14);
+  drawExpressions(detections, 85, 600, 14);
 
   faceapi.detect(gotFaces);
 }
@@ -111,8 +112,8 @@ function drawExpressions(detections, x, y, textYSpace) {
 function mousePressed() {
   if (!fullscreen()) {
     fullscreen(true); // Enter full screen mode
-    resizeCanvas(displayWidth, displayHeight); // Resize canvas to the full display dimensions
-    video.size(displayWidth, displayHeight); // Resize video to full screen
+    resizeCanvas(windowWidth, windowHeight); // Resize canvas to the full window dimensions
+    video.size(windowWidth, windowHeight); // Resize video to full screen
   } else {
     fullscreen(false); // Exit full screen mode if clicked again
     resizeCanvas(windowWidth, windowHeight); // Resize canvas to window size when exiting full screen
