@@ -51,7 +51,7 @@ function gotFaces(error, result) {
   pop();
 
   // Draw non-mirrored expressions text
-  drawExpressions(detections, 20, 250, 14);
+  drawExpressions(detections, 37, 250, 14);
 
   faceapi.detect(gotFaces);
 }
@@ -94,10 +94,10 @@ function drawExpressions(detections, x, y, textYSpace) {
 
   // Display expressions with consistent format, size, and spacing
   textFont('Helvetica Neue');
-  textSize(23);
+  textSize(30);
   noStroke();
   fill(2, 245, 31);
-  textYSpace = 23;
+  textYSpace = 29;
 
   text("neutral:           " + nf(neutral * 100, 2, 2) + "%", x, y);
   text("happy:            " + nf(happy * 100, 2, 2) + "%", x, y + textYSpace);
