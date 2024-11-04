@@ -51,7 +51,7 @@ function gotFaces(error, result) {
   pop();
 
   // Draw non-mirrored expressions text
-  drawExpressions(detections, 50, 250, 14);
+  drawExpressions(detections, 100, 250, 14);
 
   faceapi.detect(gotFaces);
 }
