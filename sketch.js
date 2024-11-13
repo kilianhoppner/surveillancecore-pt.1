@@ -94,7 +94,7 @@ function drawExpressions(detections, textYSpace) {
   }
 
   // Set equal padding for left and bottom
-  const padding = 80;
+  const padding = 110;
   const x = padding; // Padding from the left
   const yStart = height - padding - 180; // Padding from the bottom, adjusted for text height
   textYSpace = 29; // Space between each line of text
