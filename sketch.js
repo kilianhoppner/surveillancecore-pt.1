@@ -18,7 +18,7 @@ function setup() {
     withLandmarks: true,
     withExpressions: true,
     withDescriptors: true,
-    minConfidence: 0.2
+    minConfidence: 0.1
   };
 
   faceapi = ml5.faceApi(video, faceOptions, faceReady);
