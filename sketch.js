@@ -51,8 +51,8 @@ function gotFaces(error, result) {
   drawLandmarks(detections);
   pop();
 
-  // Draw non-mirrored expressions text
-  drawExpressions(detections, 85, 475, 14);
+  // Draw non-mirrored expressions text in the bottom-left corner with equal padding
+  drawExpressions(detections, 29);
 
   faceapi.detect(gotFaces);
 }
@@ -82,7 +82,7 @@ function drawLandmarks(detections) {
   }
 }
 
-function drawExpressions(detections, x, y, textYSpace) {
+function drawExpressions(detections, textYSpace) {
   let neutral, happy, angry, sad, disgusted, surprised, fearful;
 
   if (detections.length > 0) {
@@ -93,20 +93,25 @@ function drawExpressions(detections, x, y, textYSpace) {
     neutral = happy = angry = sad = disgusted = surprised = fearful = 0;
   }
 
+  // Set equal padding for left and bottom
+  const padding = 80;
+  const x = padding; // Padding from the left
+  const yStart = height - padding - 180; // Padding from the bottom, adjusted for text height
+  textYSpace = 29; // Space between each line of text
+
   // Display expressions with consistent format, size, and spacing
   textFont('Helvetica Neue');
   textSize(30);
   noStroke();
   fill(2, 245, 31);
-  textYSpace = 29;
 
-  text("neutral:           " + nf(neutral * 100, 2, 2) + "%", x, y);
-  text("happy:            " + nf(happy * 100, 2, 2) + "%", x, y + textYSpace);
-  text("angry:             " + nf(angry * 100, 2, 2) + "%", x, y + textYSpace * 2);
-  text("sad:                " + nf(sad * 100, 2, 2) + "%", x, y + textYSpace * 3);
-  text("disgusted:      " + nf(disgusted * 100, 2, 2) + "%", x, y + textYSpace * 4);
-  text("surprised:       " + nf(surprised * 100, 2, 2) + "%", x, y + textYSpace * 5);
-  text("fearful:            " + nf(fearful * 100, 2, 2) + "%", x, y + textYSpace * 6);
+  text("neutral:           " + nf(neutral * 100, 2, 2) + "%", x, yStart);
+  text("happy:            " + nf(happy * 100, 2, 2) + "%", x, yStart + textYSpace);
+  text("angry:             " + nf(angry * 100, 2, 2) + "%", x, yStart + textYSpace * 2);
+  text("sad:                " + nf(sad * 100, 2, 2) + "%", x, yStart + textYSpace * 3);
+  text("disgusted:      " + nf(disgusted * 100, 2, 2) + "%", x, yStart + textYSpace * 4);
+  text("surprised:       " + nf(surprised * 100, 2, 2) + "%", x, yStart + textYSpace * 5);
+  text("fearful:            " + nf(fearful * 100, 2, 2) + "%", x, yStart + textYSpace * 6);
 }
 
 function mousePressed() {
@@ -125,4 +130,3 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   video.size(windowWidth, windowHeight); // Adjust video to window size on resize
 }
-
