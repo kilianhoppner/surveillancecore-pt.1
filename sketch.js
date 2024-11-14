@@ -62,7 +62,7 @@ function drawBoxs(detections) {
     for (let f = 0; f < detections.length; f++) {
       let {_x, _y, _width, _height} = detections[f].alignedRect._box;
       stroke(2, 245, 31);
-      strokeWeight(11);
+      strokeWeight(10);
       noFill();
       rect(_x, _y, _width, _height); // Draw detection box
     }
@@ -75,7 +75,7 @@ function drawLandmarks(detections) {
       let points = detections[f].landmarks.positions;
       for (let i = 0; i < points.length; i++) {
         stroke(2, 245, 31);
-        strokeWeight(8);
+        strokeWeight(7);
         point(points[i]._x, points[i]._y); // Draw face landmarks
       }
     }
