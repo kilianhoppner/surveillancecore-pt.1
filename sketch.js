@@ -62,7 +62,7 @@ function drawBoxs(detections) {
     for (let f = 0; f < detections.length; f++) {
       let {_x, _y, _width, _height} = detections[f].alignedRect._box;
       stroke(2, 245, 31);
-      strokeWeight(10);
+      strokeWeight(8);
       noFill();
       rect(_x, _y, _width, _height); // Draw detection box
     }
@@ -75,7 +75,7 @@ function drawLandmarks(detections) {
       let points = detections[f].landmarks.positions;
       for (let i = 0; i < points.length; i++) {
         stroke(2, 245, 31);
-        strokeWeight(7);
+        strokeWeight(6.5);
         point(points[i]._x, points[i]._y); // Draw face landmarks
       }
     }
@@ -94,7 +94,7 @@ function drawExpressions(detections, textYSpace) {
   }
 
   // Set equal padding for left and bottom
-  const padding = 110;
+  const padding = 50;
   const x = padding; // Padding from the left
   const yStart = height - padding - 180; // Padding from the bottom, adjusted for text height
   textYSpace = 29; // Space between each line of text
