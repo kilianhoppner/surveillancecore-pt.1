@@ -1,3 +1,5 @@
+// This project was initiated using code by Kazuki Umeda and was then modified to fit its purposes
+
 let faceapi;
 let detections = [];
 
