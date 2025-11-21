@@ -1,4 +1,5 @@
-// This project was initiated using code by Kazuki Umeda and was then modified to fit its purposes
+// Updated code to keep text pinned to bottom-left corner with proportional scaling and scale face markers
+// Added variables for easy modification of color, stroke width, dot size, and font size
 
 let faceapi;
 let detections = [];
@@ -6,15 +7,22 @@ let detections = [];
 let video;
 let canvas;
 
+// Adjustable parameters
+let boxColor = [0, 255, 0];
+let dotColor = [0, 255, 0];
+let baseBoxStroke = 11.5; // base stroke width
+let baseDotSize = 8.5; // base dot size
+let baseFontSize = 30; // base font size
+
 function setup() {
   canvas = createCanvas(windowWidth, windowHeight);
   canvas.id("canvas");
-  canvas.style("outline", "none"); // Remove outline around the canvas
+  canvas.style("outline", "none");
 
   video = createCapture(VIDEO);
   video.id("video");
   video.size(windowWidth, windowHeight);
-  video.hide(); // Hide the default video element to avoid double display
+  video.hide();
 
   const faceOptions = {
     withLandmarks: true,
@@ -39,96 +47,92 @@ function gotFaces(error, result) {
   detections = result;
 
   clear();
-  noStroke(); // Ensure no stroke around canvas elements
+  noStroke();
 
-  // Mirror the video and face detection
   push();
-  translate(width, 0); // Move to the far side of the canvas
-  scale(-1, 1); // Flip horizontally
-
-  image(video, 0, 0, width, height); // Draw the mirrored video
-
-  // Draw mirrored face features
+  translate(width, 0);
+  scale(-1, 1);
+  image(video, 0, 0, width, height);
   drawBoxs(detections);
   drawLandmarks(detections);
   pop();
 
-  // Draw non-mirrored expressions text in the bottom-left corner with equal padding
-  drawExpressions(detections, 29);
+  drawExpressionsScaled(detections);
 
   faceapi.detect(gotFaces);
 }
 
 function drawBoxs(detections) {
+  const s = height / 1000; // scale factor
   if (detections.length > 0) {
     for (let f = 0; f < detections.length; f++) {
-      let {_x, _y, _width, _height} = detections[f].alignedRect._box;
-      stroke(2, 245, 31);
-      strokeWeight(8);
+      let { _x, _y, _width, _height } = detections[f].alignedRect._box;
+      stroke(...boxColor);
+      strokeWeight(baseBoxStroke * s); // scale stroke width
       noFill();
-      rect(_x, _y, _width, _height); // Draw detection box
+      rect(_x, _y, _width, _height);
     }
   }
 }
 
 function drawLandmarks(detections) {
+  const s = height / 1000; // scale factor
   if (detections.length > 0) {
     for (let f = 0; f < detections.length; f++) {
       let points = detections[f].landmarks.positions;
       for (let i = 0; i < points.length; i++) {
-        stroke(2, 245, 31);
-        strokeWeight(6.5);
-        point(points[i]._x, points[i]._y); // Draw face landmarks
+        stroke(...dotColor);
+        strokeWeight(baseDotSize * s); // scale point size
+        point(points[i]._x, points[i]._y);
       }
     }
   }
 }
 
-function drawExpressions(detections, textYSpace) {
+function drawExpressionsScaled(detections) {
   let neutral, happy, angry, sad, disgusted, surprised, fearful;
 
   if (detections.length > 0) {
-    // If a face is detected, get the actual expression values
-    ({neutral, happy, angry, sad, disgusted, surprised, fearful} = detections[0].expressions);
+    ({ neutral, happy, angry, sad, disgusted, surprised, fearful } = detections[0].expressions);
   } else {
-    // If no face is detected, set each expression value to 0
     neutral = happy = angry = sad = disgusted = surprised = fearful = 0;
   }
 
-  // Set equal padding for left and bottom
-  const padding = 50;
-  const x = padding; // Padding from the left
-  const yStart = height - padding - 180; // Padding from the bottom, adjusted for text height
-  textYSpace = 29; // Space between each line of text
+  const scaleFactor = height / 1000;
+  const baseTextSize = baseFontSize * scaleFactor;
+  const textYSpace = 29 * scaleFactor;
+  const padding = 50 * scaleFactor;
 
-  // Display expressions with consistent format, size, and spacing
-  textFont('Helvetica Neue');
-  textSize(30);
+  const x = padding;
+  const yStart = height - padding - (180 * scaleFactor);
+
+  textFont("Helvetica Neue");
+  textSize(baseTextSize);
   noStroke();
-  fill(2, 245, 31);
+  fill(...boxColor);
 
-  text("neutral:           " + nf(neutral * 100, 2, 2) + "%", x, yStart);
-  text("happy:            " + nf(happy * 100, 2, 2) + "%", x, yStart + textYSpace);
-  text("angry:             " + nf(angry * 100, 2, 2) + "%", x, yStart + textYSpace * 2);
-  text("sad:                " + nf(sad * 100, 2, 2) + "%", x, yStart + textYSpace * 3);
-  text("disgusted:      " + nf(disgusted * 100, 2, 2) + "%", x, yStart + textYSpace * 4);
-  text("surprised:       " + nf(surprised * 100, 2, 2) + "%", x, yStart + textYSpace * 5);
-  text("fearful:            " + nf(fearful * 100, 2, 2) + "%", x, yStart + textYSpace * 6);
+  text(`neutral:        ${nf(neutral * 100, 2, 2)}%`, x, yStart);
+  text(`happy:         ${nf(happy * 100, 2, 2)}%`, x, yStart + textYSpace);
+  text(`angry:          ${nf(angry * 100, 2, 2)}%`, x, yStart + textYSpace * 2);
+  text(`sad:             ${nf(sad * 100, 2, 2)}%`, x, yStart + textYSpace * 3);
+  text(`disgusted:   ${nf(disgusted * 100, 2, 2)}%`, x, yStart + textYSpace * 4);
+  text(`surprised:    ${nf(surprised * 100, 2, 2)}%`, x, yStart + textYSpace * 5);
+  text(`fearful:         ${nf(fearful * 100, 2, 2)}%`, x, yStart + textYSpace * 6);
 }
 
 function mousePressed() {
   if (!fullscreen()) {
-    fullscreen(true); // Enter full screen mode
-    resizeCanvas(windowWidth, windowHeight); // Resize canvas to the full window dimensions
-    video.size(windowWidth, windowHeight); // Resize video to full screen
+    fullscreen(true);
+    resizeCanvas(windowWidth, windowHeight);
+    video.size(windowWidth, windowHeight);
   } else {
-    fullscreen(false); // Exit full screen mode if clicked again
-    resizeCanvas(windowWidth, windowHeight); // Resize canvas to window size when exiting full screen
-    video.size(windowWidth, windowHeight); // Resize video back to window size
+    fullscreen(false);
+    resizeCanvas(windowWidth, windowHeight);
+    video.size(windowWidth, windowHeight);
   }
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  video.size(windowWidth, windowHeight); // Adjust video to window size on resize
+  video.size(windowWidth, windowHeight);
 }
