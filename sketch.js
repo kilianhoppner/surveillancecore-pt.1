@@ -1,6 +1,3 @@
-// Updated code to keep text pinned to bottom-left corner with proportional scaling and scale face markers
-// Added variables for easy modification of color, stroke width, dot size, and font size
-
 let faceapi;
 let detections = [];
 
@@ -10,9 +7,11 @@ let canvas;
 // Adjustable parameters
 let boxColor = [0, 255, 0];
 let dotColor = [0, 255, 0];
-let baseBoxStroke = 11.5; // base stroke width
-let baseDotSize = 8.5; // base dot size
+let baseBoxStroke = 12; // base stroke width
+let baseDotSize = 7.5; // base dot size
 let baseFontSize = 30; // base font size
+
+let drawX = 0, drawY = 0, drawWidth = 0, drawHeight = 0;
 
 function setup() {
   canvas = createCanvas(windowWidth, windowHeight);
@@ -21,8 +20,7 @@ function setup() {
 
   video = createCapture(VIDEO);
   video.id("video");
-  video.size(windowWidth, windowHeight);
-  video.hide();
+  video.hide(); // hide default video element
 
   const faceOptions = {
     withLandmarks: true,
@@ -52,7 +50,20 @@ function gotFaces(error, result) {
   push();
   translate(width, 0);
   scale(-1, 1);
-  image(video, 0, 0, width, height);
+
+  // Fill full width, maintain aspect ratio
+  const videoAspect = video.width / video.height;
+  drawWidth = width;
+  drawHeight = width / videoAspect;
+
+  // Center vertically
+  drawX = 0;
+  drawY = (height - drawHeight) / 2;
+
+  // Draw the video
+  image(video, drawX, drawY, drawWidth, drawHeight);
+
+  // Draw face boxes and landmarks scaled to the video
   drawBoxs(detections);
   drawLandmarks(detections);
   pop();
@@ -63,27 +74,41 @@ function gotFaces(error, result) {
 }
 
 function drawBoxs(detections) {
-  const s = height / 1000; // scale factor
   if (detections.length > 0) {
+    const scaleX = drawWidth / video.width;
+    const scaleY = drawHeight / video.height;
+    const s = height / 1000; // base scaling for stroke
+
     for (let f = 0; f < detections.length; f++) {
-      let { _x, _y, _width, _height } = detections[f].alignedRect._box;
+      let box = detections[f].alignedRect._box;
       stroke(...boxColor);
-      strokeWeight(baseBoxStroke * s); // scale stroke width
+      strokeWeight(baseBoxStroke * s);
       noFill();
-      rect(_x, _y, _width, _height);
+      rect(
+        drawX + box._x * scaleX,
+        drawY + box._y * scaleY,
+        box._width * scaleX,
+        box._height * scaleY
+      );
     }
   }
 }
 
 function drawLandmarks(detections) {
-  const s = height / 1000; // scale factor
   if (detections.length > 0) {
+    const scaleX = drawWidth / video.width;
+    const scaleY = drawHeight / video.height;
+    const s = height / 1000; // base scaling for dots
+
     for (let f = 0; f < detections.length; f++) {
       let points = detections[f].landmarks.positions;
       for (let i = 0; i < points.length; i++) {
         stroke(...dotColor);
-        strokeWeight(baseDotSize * s); // scale point size
-        point(points[i]._x, points[i]._y);
+        strokeWeight(baseDotSize * s);
+        point(
+          drawX + points[i]._x * scaleX,
+          drawY + points[i]._y * scaleY
+        );
       }
     }
   }
@@ -124,15 +149,12 @@ function mousePressed() {
   if (!fullscreen()) {
     fullscreen(true);
     resizeCanvas(windowWidth, windowHeight);
-    video.size(windowWidth, windowHeight);
   } else {
     fullscreen(false);
     resizeCanvas(windowWidth, windowHeight);
-    video.size(windowWidth, windowHeight);
   }
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  video.size(windowWidth, windowHeight);
 }
