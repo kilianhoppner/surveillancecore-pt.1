@@ -4,6 +4,29 @@ let detections = [];
 let video;
 let canvas;
 
+/** Parent page (portfolio iframe) listens for this — see surveillance-embed.js */
+let parentNotifiedTracking = false;
+let videoStreamReady = false;
+let faceModelReady = false;
+
+function postSurveillancePhase(phase) {
+  try {
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: "surveillancecore-pt1", phase: phase }, "*");
+    }
+  } catch (e) {
+    /* ignore */
+  }
+}
+
+function tryNotifyTrackingReady() {
+  if (parentNotifiedTracking) return;
+  if (videoStreamReady && faceModelReady) {
+    parentNotifiedTracking = true;
+    postSurveillancePhase("tracking-ready");
+  }
+}
+
 // Adjustable parameters
 let boxColor = [0, 255, 0];
 let dotColor = [0, 255, 0];
@@ -21,6 +44,17 @@ function setup() {
   video = createCapture(VIDEO);
   video.id("video");
   video.hide(); // hide default video element
+  if (video.elt) {
+    video.elt.setAttribute("playsinline", "");
+    video.elt.addEventListener(
+      "loadeddata",
+      function onVideoReady() {
+        videoStreamReady = true;
+        tryNotifyTrackingReady();
+      },
+      { once: true }
+    );
+  }
 
   const faceOptions = {
     withLandmarks: true,
@@ -33,6 +67,8 @@ function setup() {
 }
 
 function faceReady() {
+  faceModelReady = true;
+  tryNotifyTrackingReady();
   faceapi.detect(gotFaces);
 }
 
